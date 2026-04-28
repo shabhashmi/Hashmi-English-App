@@ -1,0 +1,209 @@
+// Game Data
+const lessons = {
+    beginner: [
+        {
+            question: "What is your ___?",
+            options: ["name", "game", "fame", "same"],
+            answer: 0,
+            explanation: "We ask 'What is your name?' to know someone's name."
+        },
+        {
+            question: "I ___ a student.",
+            options: ["am", "is", "are", "be"],
+            answer: 0,
+            explanation: "'Am' is used with 'I'."
+        },
+        {
+            question: "She ___ happy.",
+            options: ["is", "am", "are", "be"],
+            answer: 0,
+            explanation: "'Is' is used with 'She/He/It'."
+        }
+    ],
+    intermediate: [
+        {
+            question: "I ___ to the market yesterday.",
+            options: ["go", "went", "gone", "going"],
+            answer: 1,
+            explanation: "Past tense of 'go' is 'went'."
+        }
+    ]
+};
+
+// Game State
+let currentQuestion = 0;
+let score = 0;
+let totalQuestions = 0;
+let streak = 0;
+let currentLevel = 'beginner';
+let questionsAnswered = 0;
+let correctAnswers = 0;
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('app').classList.remove('hidden');
+    }, 2000);
+    
+    loadStats();
+    updateProgress();
+});
+
+// Navigation
+function showWelcome() {
+    hideAllScreens();
+    document.getElementById('welcomeScreen').classList.add('active');
+    document.querySelector('.bottom-nav .nav-btn:nth-child(1)').classList.add('active');
+    document.querySelector('.bottom-nav .nav-btn:nth-child(2)').classList.remove('active');
+    document.querySelector('.bottom-nav .nav-btn:nth-child(3)').classList.remove('active');
+}
+
+function showLesson() {
+    hideAllScreens();
+    document.getElementById('lessonScreen').classList.add('active');
+    document.querySelector('.bottom-nav .nav-btn:nth-child(2)').classList.add('active');
+    document.querySelector('.bottom-nav .nav-btn:nth-child(1)').classList.remove('active');
+    document.querySelector('.bottom-nav .nav-btn:nth-child(3)').classList.remove('active');
+}
+
+function showStats() {
+    hideAllScreens();
+    document.getElementById('statsScreen').classList.add('active');
+    updateStatsDisplay();
+    document.querySelector('.bottom-nav .nav-btn:nth-child(3)').classList.add('active');
+    document.querySelector('.bottom-nav .nav-btn:nth-child(1)').classList.remove('active');
+    document.querySelector('.bottom-nav .nav-btn:nth-child(2)').classList.remove('active');
+}
+
+function hideAllScreens() {
+    document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+    });
+}
+
+// Lesson Functions
+function startLesson() {
+    currentQuestion = 0;
+    score = 0;
+    showLesson();
+    loadQuestion();
+}
+
+function loadQuestion() {
+    const question = lessons[currentLevel][currentQuestion];
+    document.getElementById('lessonTitle').textContent = `Question ${currentQuestion + 1}/5`;
+    document.getElementById('questionText').textContent = question.question;
+    
+    const optionsContainer = document.getElementById('options');
+    optionsContainer.innerHTML = '';
+    
+    question.options.forEach((option, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.textContent = option;
+        btn.onclick = () => selectAnswer(index, question.answer, question.explanation);
+        optionsContainer.appendChild(btn);
+    });
+    
+    // Hide other sections
+    document.getElementById('fillBlankSection').classList.add('hidden');
+    document.getElementById('mcqSection').classList.remove('hidden');
+}
+
+function selectAnswer(selected, correct, explanation) {
+    totalQuestions++;
+    questionsAnswered++;
+    
+    if (selected === correct) {
+        score += 10;
+        correctAnswers++;
+        streak++;
+        showResult(true, explanation);
+    } else {
+        streak = 0;
+        showResult(false, explanation);
+    }
+    
+    updateProgress();
+    saveStats();
+}
+
+function showResult(isCorrect, explanation) {
+    const modal = document.getElementById('resultModal');
+    const title = document.getElementById('resultTitle');
+    const message = document.getElementById('resultMessage');
+    const icon = document.querySelector('.correct-icon');
+    
+    if (isCorrect) {
+        title.textContent = '✅ Correct!';
+        title.style.color = '#4ecdc4';
+        message.textContent = explanation;
+        icon.style.color = '#4ecdc4';
+    } else {
+        title.textContent = '❌ Try Again!';
+        title.style.color = '#ff6b6b';
+        message.innerHTML = `Correct answer: <strong>${lessons[currentLevel][currentQuestion].options[lessons[currentLevel][currentQuestion].answer]}</strong><br>${explanation}`;
+        icon.style.color = '#ff6b6b';
+    }
+    
+    modal.classList.remove('hidden');
+}
+
+function nextQuestion() {
+    document.getElementById('resultModal').classList.add('hidden');
+    
+    currentQuestion++;
+    if (currentQuestion < lessons[currentLevel].length) {
+        loadQuestion();
+    } else {
+        showCompletion();
+    }
+}
+
+function showCompletion() {
+    alert(`🎉 Lesson Complete!\nScore: ${score}/${lessons[currentLevel].length * 10}\nAccuracy: ${Math.round((correctAnswers/questionsAnswered)*100)}%`);
+    showWelcome();
+}
+
+// Progress & Stats
+function updateProgress() {
+    const progress = Math.min((score / 50) * 100, 100);
+    document.getElementById('progressFill').style.width = progress + '%';
+    document.getElementById('progressText').textContent = Math.round(progress) + '%';
+    
+    document.getElementById('streak').textContent = `Streak: ${streak}`;
+    document.getElementById('level').textContent = `Level ${Math.floor(score/50) + 1}`;
+}
+
+function updateStatsDisplay() {
+    const accuracy = questionsAnswered > 0 ? Math.round((correctAnswers/questionsAnswered)*100) : 0;
+    document.getElementById('totalQuestions').textContent = questionsAnswered;
+    document.getElementById('correctAnswers').textContent = correctAnswers;
+    document.getElementById('accuracy').textContent = accuracy + '%';
+}
+
+function saveStats() {
+    localStorage.setItem('englishAppStats', JSON.stringify({
+        questionsAnswered,
+        correctAnswers,
+        streak: Math.max(streak, localStorage.getItem('streak') || 0)
+    }));
+}
+
+function loadStats() {
+    const stats = JSON.parse(localStorage.getItem('englishAppStats') || '{}');
+    questionsAnswered = stats.questionsAnswered || 0;
+    correctAnswers = stats.correctAnswers || 0;
+    streak = stats.streak || 0;
+}
+
+function resetStats() {
+    if (confirm('Reset all stats?')) {
+        localStorage.removeItem('englishAppStats');
+        questionsAnswered = 0;
+        correctAnswers = 0;
+        streak = 0;
+        updateStatsDisplay();
+    }
+}

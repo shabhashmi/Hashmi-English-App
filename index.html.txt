@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supernova: Learn English Fast - FREE</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading">
+        <div class="loader">
+            <i class="fas fa-rocket"></i>
+            <p>Loading Supernova...</p>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="hidden">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-rocket"></i>
+                    <h1>Supernova</h1>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <span id="progressText">0%</span>
+                </div>
+                <div class="stats">
+                    <span id="streak">Streak: 0</span>
+                    <span id="level">Level 1</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Welcome Screen -->
+            <div id="welcomeScreen" class="screen active">
+                <div class="welcome-content">
+                    <h2>🚀 Welcome to Supernova!</h2>
+                    <p>Learn English 10x Faster with AI-Powered Lessons</p>
+                    <button class="btn-primary start-btn" onclick="startLesson()">
+                        <i class="fas fa-play"></i> Start Free Lesson
+                    </button>
+                    <div class="features">
+                        <div class="feature">
+                            <i class="fas fa-brain"></i>
+                            <span>Smart AI</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-fire"></i>
+                            <span>Daily Streak</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-trophy"></i>
+                            <span>Free Forever</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lesson Screen -->
+            <div id="lessonScreen" class="screen">
+                <div class="lesson-header">
+                    <h3 id="lessonTitle">Daily English Challenge</h3>
+                    <button class="btn-secondary" onclick="showWelcome()">
+                        <i class="fas fa-home"></i>
+                    </button>
+                </div>
+
+                <!-- Question Types -->
+                <div id="questionContainer"></div>
+                
+                <!-- Multiple Choice -->
+                <div id="mcqSection" class="question-type">
+                    <div class="question">
+                        <h4 id="questionText"></h4>
+                        <div class="options" id="options"></div>
+                    </div>
+                </div>
+
+                <!-- Fill in Blank -->
+                <div id="fillBlankSection" class="question-type hidden">
+                    <div class="question">
+                        <h4 id="blankQuestion"></h4>
+                        <input type="text" id="blankAnswer" class="fill-input" placeholder="Type answer...">
+                        <button class="btn-primary" onclick="checkBlankAnswer()">Submit</button>
+                    </div>
+                </div>
+
+                <!-- Result Modal -->
+                <div id="resultModal" class="modal hidden">
+                    <div class="modal-content">
+                        <i class="fas fa-check-circle correct-icon"></i>
+                        <h3 id="resultTitle">Correct!</h3>
+                        <p id="resultMessage"></p>
+                        <button class="btn-primary" onclick="nextQuestion()">Next Question</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Screen -->
+            <div id="statsScreen" class="screen">
+                <h2>Your Progress</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3 id="totalQuestions">0</h3>
+                        <p>Total Questions</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="correctAnswers">0</h3>
+                        <p>Correct Answers</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="accuracy">0%</h3>
+                        <p>Accuracy</p>
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="resetStats()">Reset Stats</button>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button onclick="showWelcome()" class="nav-btn active">
+                <i class="fas fa-home"></i>
+            </button>
+            <button onclick="showLesson()" class="nav-btn">
+                <i class="fas fa-book"></i>
+            </button>
+            <button onclick="showStats()" class="nav-btn">
+                <i class="fas fa-chart-bar"></i>
+            </button>
+        </nav>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
